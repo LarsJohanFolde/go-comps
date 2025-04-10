@@ -26,12 +26,7 @@ func initialModel() model {
 	ti.CharLimit = 54
 	ti.Width = 30
 
-	// var names []string
 	persons := db.GetPersons()
-
-	// for i := range persons {
-	//   names = append(names, persons[i].Name)
-	// }
 
 	return model{
 		input:           ti,
@@ -54,12 +49,12 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch msg.String() {
 		case "ctrl+c", "q":
 			return m, tea.Quit
-		case "up", "k":
+		case "up", "shift+tab", "k":
 			if m.cursor > 0 {
 				m.cursor--
 			}
-		case "down", "j":
-			if m.cursor < len(m.filteredPersons)-1 {
+		case "down", "tab", "j":
+			if m.cursor < 20 {
 				m.cursor++
 			}
 		case "enter":

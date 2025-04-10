@@ -53,7 +53,6 @@ func GetPersons() []person.Person {
 			CountryId: countryId,
 		}
 		persons = append(persons, p)
-		// fmt.Printf("WCA ID: %s, Name: %s\n", wcaId, name)
 	}
 
 	return persons
