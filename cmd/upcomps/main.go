@@ -117,11 +117,10 @@ func main() {
         competitions := db.GetUpcomingCompetitions(m.filteredPersons[m.cursor].WcaId)
         for _, competition := range competitions {
             fmt.Printf(
-                "%s, %s\n\t%s -> %s\n\n", 
+                "%s, %s\n\t%s\n\n",
                 competition.Name, 
                 competition.CountryId, 
-                competition.StartDate, 
-                competition.EndDate,
+                competition.Duration(),
             )
         }
     }

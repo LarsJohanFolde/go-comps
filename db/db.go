@@ -20,6 +20,13 @@ type Competition struct {
 	EndDate   string
 }
 
+func (c Competition) Duration() string {
+    if c.StartDate == c.EndDate {
+        return c.StartDate
+    }
+    return fmt.Sprintf("%s -> %s", c.StartDate, c.EndDate)
+}
+
 func GetPersons() []person.Person {
 	err := godotenv.Load()
 	if err != nil {
