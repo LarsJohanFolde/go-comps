@@ -102,7 +102,7 @@ func (m model) View() string {
 		if i == m.cursor {
 			cursor = "\033[32m >" // current selection
 		}
-		s += fmt.Sprintf("%s %s\n", cursor, fmt.Sprintf("%s, %s (%s)", person.Name, person.CountryId, person.WcaId))
+		s += fmt.Sprintf("%s %s\033[0m\n", cursor, fmt.Sprintf("%s, %s (%s)", person.Name, person.CountryId, person.WcaId))
 	}
 
 	if len(m.filteredPersons) == 0 {
