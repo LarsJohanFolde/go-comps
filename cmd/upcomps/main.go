@@ -91,9 +91,9 @@ func (m model) View() string {
 		if i > 20 {
 			break
 		}
-		cursor := " " // no cursor
+		cursor := "\033[0m " // no cursor
 		if i == m.cursor {
-			cursor = ">" // current selection
+			cursor = "\033[32m >" // current selection
 		}
 		s += fmt.Sprintf("%s %s\n", cursor, fmt.Sprintf("%s, %s (%s)", person.Name, person.CountryId, person.WcaId))
 	}
