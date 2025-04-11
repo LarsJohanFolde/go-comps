@@ -53,10 +53,14 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "up", "shift+tab":
 			if m.cursor > 0 {
 				m.cursor--
+			} else {
+				m.cursor = 20
 			}
 		case "down", "tab":
 			if m.cursor < 20 {
 				m.cursor++
+			} else {
+				m.cursor = 0
 			}
 		case "enter":
 			m.selectedWcaId = m.filteredPersons[m.cursor].WcaId
