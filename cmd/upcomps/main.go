@@ -63,8 +63,10 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.cursor = 0
 			}
 		case "enter":
-			m.selectedWcaId = m.filteredPersons[m.cursor].WcaId
-			return m, tea.Quit
+			if len(m.filteredPersons) > 0 {
+				m.selectedWcaId = m.filteredPersons[m.cursor].WcaId
+				return m, tea.Quit
+			}
 		}
 	}
 
