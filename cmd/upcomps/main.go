@@ -5,6 +5,7 @@ import (
 	"go-comps/db"
 	"go-comps/internal/models"
 	"log"
+	"os"
 	"strings"
 
 	"github.com/charmbracelet/bubbles/textinput"
@@ -16,7 +17,7 @@ type model struct {
 	allPersons      []person.Person
 	filteredPersons []person.Person
 	cursor          int
-    selectedWcaId   string
+	selectedWcaId   string
 }
 
 func initialModel() model {
@@ -47,7 +48,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	case tea.KeyMsg:
 		switch msg.String() {
-        case "ctrl+c", "esc":
+		case "ctrl+c", "esc":
 			return m, tea.Quit
 		case "up", "shift+tab":
 			if m.cursor > 0 {
@@ -58,7 +59,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.cursor++
 			}
 		case "enter":
-            m.selectedWcaId = m.filteredPersons[m.cursor].WcaId
+			m.selectedWcaId = m.filteredPersons[m.cursor].WcaId
 			return m, tea.Quit
 		}
 	}
@@ -106,22 +107,35 @@ func (m model) View() string {
 }
 
 func main() {
+	if len(os.Args) > 1 {
+		wcaId := os.Args[1]
+		competitions := db.GetUpcomingCompetitions(wcaId)
+		for _, competition := range competitions {
+			fmt.Printf(
+				"%s, %s\n\t%s\n\n",
+				competition.Name,
+				competition.CountryId,
+				competition.Duration(),
+			)
+		}
+		os.Exit(0)
+	}
 	p := tea.NewProgram(initialModel())
-    finalModel, err := p.Run()
-    if err != nil {
-        log.Fatal(err)
-    }
+	finalModel, err := p.Run()
+	if err != nil {
+		log.Fatal(err)
+	}
 
-    if m, ok := finalModel.(model); ok {
-        fmt.Printf("\n\n")
-        competitions := db.GetUpcomingCompetitions(m.filteredPersons[m.cursor].WcaId)
-        for _, competition := range competitions {
-            fmt.Printf(
-                "%s, %s\n\t%s\n\n",
-                competition.Name, 
-                competition.CountryId, 
-                competition.Duration(),
-            )
-        }
-    }
+	if m, ok := finalModel.(model); ok {
+		fmt.Printf("\n\n")
+		competitions := db.GetUpcomingCompetitions(m.filteredPersons[m.cursor].WcaId)
+		for _, competition := range competitions {
+			fmt.Printf(
+				"%s, %s\n\t%s\n\n",
+				competition.Name,
+				competition.CountryId,
+				competition.Duration(),
+			)
+		}
+	}
 }
