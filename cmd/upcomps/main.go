@@ -133,8 +133,11 @@ func main() {
 	}
 
 	if m, ok := finalModel.(model); ok {
+		if m.selectedWcaId == "" {
+			os.Exit(0)
+		}
 		fmt.Printf("\n\n")
-		competitions := db.GetUpcomingCompetitions(m.filteredPersons[m.cursor].WcaId)
+		competitions := db.GetUpcomingCompetitions(m.selectedWcaId)
 		for _, competition := range competitions {
 			fmt.Printf(
 				"%s, %s\n\t%s\n\n",
