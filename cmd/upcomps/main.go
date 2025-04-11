@@ -85,7 +85,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m model) View() string {
-	s := "Type to search. Use ↑/↓ to navigate, Enter to select, q to quit.\n\n"
+	s := "Type to search. Use ↑/↓ to navigate, Enter to select, esc to quit.\n\n"
 	s += m.input.View() + "\n\n"
 
 	for i, person := range m.filteredPersons {
