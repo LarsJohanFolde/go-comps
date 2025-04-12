@@ -57,7 +57,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.cursor = 20
 			}
 		case "down", "tab":
-			if m.cursor < 20 {
+			if m.cursor < len(m.filteredPersons)-1 {
 				m.cursor++
 			} else {
 				m.cursor = 0
