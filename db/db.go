@@ -29,7 +29,7 @@ func (c Competition) StatusColor() string {
 		return "\033[33m"
 	case "rejected":
 		return "\033[31m"
-	case "deleted":
+	case "cancelled":
 		return "\033[31m"
 	case "pending":
 		return "\033[33m"
