@@ -12,38 +12,6 @@ import (
 	"github.com/joho/godotenv"
 )
 
-type Competition struct {
-	ID              string
-	Name            string
-	CountryId       string
-	StartDate       string
-	EndDate         string
-	CompetingStatus string
-}
-
-func (c Competition) StatusColor() string {
-	switch c.CompetingStatus {
-	case "accepted":
-		return "\033[32m"
-	case "waiting_list":
-		return "\033[33m"
-	case "rejected":
-		return "\033[31m"
-	case "cancelled":
-		return "\033[31m"
-	case "pending":
-		return "\033[33m"
-	}
-	return "\033[0m"
-}
-
-func (c Competition) Duration() string {
-	if c.StartDate == c.EndDate {
-		return c.StartDate
-	}
-	return fmt.Sprintf("%s -> %s", c.StartDate, c.EndDate)
-}
-
 func LoadDSN() string {
 	err := godotenv.Load()
 	if err != nil {
@@ -53,7 +21,7 @@ func LoadDSN() string {
 	return dsn
 }
 
-func GetPersons() []person.Person {
+func GetPersons() []models.Person {
 	dsn := LoadDSN()
 	db, err := sql.Open("mysql", dsn)
 	if err != nil {
@@ -67,7 +35,7 @@ func GetPersons() []person.Person {
 	}
 	defer rows.Close()
 
-	var persons []person.Person
+	var persons []models.Person
 
 	for rows.Next() {
 		var wcaId string
@@ -76,7 +44,7 @@ func GetPersons() []person.Person {
 		if err := rows.Scan(&wcaId, &name, &countryId); err != nil {
 			log.Fatal(err)
 		}
-		p := person.Person{
+		p := models.Person{
 			WcaId:     wcaId,
 			Name:      strings.Split(name, " (")[0],
 			CountryId: countryId,
@@ -87,7 +55,7 @@ func GetPersons() []person.Person {
 	return persons
 }
 
-func GetUpcomingCompetitions(wcaId string) []Competition {
+func GetUpcomingCompetitions(wcaId string) []models.Competition {
 	query := fmt.Sprintf(`
     SELECT
         c.name AS Competition,
@@ -123,7 +91,7 @@ func GetUpcomingCompetitions(wcaId string) []Competition {
 	}
 	defer rows.Close()
 
-	var competitions []Competition
+	var competitions []models.Competition
 
 	for rows.Next() {
 		var name string
@@ -137,7 +105,7 @@ func GetUpcomingCompetitions(wcaId string) []Competition {
 		}
 
 		if upcoming {
-			c := Competition{Name: name, CountryId: countryId, StartDate: startDate, EndDate: endDate, CompetingStatus: competingStatus}
+			c := models.Competition{Name: name, CountryId: countryId, StartDate: startDate, EndDate: endDate, CompetingStatus: competingStatus}
 			competitions = append(competitions, c)
 		}
 	}

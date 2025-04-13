@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 	"go-comps/db"
-	"go-comps/internal/models"
 	"log"
+    "go-comps/internal/models"
 	"os"
 	"strings"
 
@@ -14,8 +14,8 @@ import (
 
 type model struct {
 	input           textinput.Model
-	allPersons      []person.Person
-	filteredPersons []person.Person
+	allPersons      []models.Person
+	filteredPersons []models.Person
 	cursor          int
 	selectedWcaId   string
 }
