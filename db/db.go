@@ -94,9 +94,9 @@ func GetUpcomingCompetitions(wcaId string) []Competition {
         c.countryid AS CountryId,
         c.start_date AS StartDate,
         c.end_date AS EndDate,
-        (SELECT r1.competing_status FROM registrations r1 WHERE r1.competition_id = c.id AND r1.user_id = (
+        COALESCE((SELECT r1.competing_status FROM registrations r1 WHERE r1.competition_id = c.id AND r1.user_id = (
         SELECT id from users WHERE wca_id = '%s'
-        )),
+        )), "accepted"),
         CASE WHEN start_date > CURRENT_DATE() THEN true ELSE false END AS Upcoming
     FROM Competitions c
     WHERE c.id IN (SELECT competitionId FROM Results WHERE personid = '%s')
