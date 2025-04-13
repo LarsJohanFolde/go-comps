@@ -38,6 +38,7 @@ func GetPersons() []person.Person {
 	if err != nil {
 		log.Fatal(err)
 	}
+    defer db.Close()
 
 	rows, err := db.Query("SELECT wca_id, name, countryId FROM Persons WHERE subId = '1'")
 	if err != nil {
@@ -82,7 +83,7 @@ func GetUpcomingCompetitions(wcaId string) []Competition {
             JOIN Competitions c1 ON r.competition_id = c.id
             WHERE 
                 r.user_id = (SELECT id FROM users WHERE wca_id = '%s')
-                AND (c1.start_date > CURRENT_DATE() OR (c1.results_posted_at IS NULL AND c1.cancelled_at IS NULL))
+                AND (c1.end_date > CURRENT_DATE() OR (c1.results_posted_at IS NULL AND c1.cancelled_at IS NULL))
                 AND r.deleted_at IS NULL
 		   )
     GROUP BY c.id
@@ -94,6 +95,7 @@ func GetUpcomingCompetitions(wcaId string) []Competition {
     if err != nil {
         log.Fatal(err)
     }
+    defer db.Close()
 
     rows, err := db.Query(query)
     if err != nil {
