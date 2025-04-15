@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 	"go-comps/db"
+	"go-comps/internal/models"
 	"log"
-    "go-comps/internal/models"
 	"os"
 	"strings"
 
@@ -140,8 +140,9 @@ func main() {
 		competitions := db.GetUpcomingCompetitions(m.selectedWcaId)
 		for _, competition := range competitions {
 			fmt.Printf(
-				"%s%s, %s\n\t%s\033[0m\n\n",
+				"%s[%s] %s, %s\n\t%s\033[0m\n\n",
 				competition.StatusColor(),
+				competition.CompetingStatus,
 				competition.Name,
 				competition.CountryId,
 				competition.Duration(),

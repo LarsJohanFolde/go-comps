@@ -1,7 +1,7 @@
 package models
 
 import (
-    "fmt"
+	"fmt"
 )
 
 type Person struct {
@@ -41,4 +41,3 @@ func (c Competition) Duration() string {
 	}
 	return fmt.Sprintf("%s -> %s", c.StartDate, c.EndDate)
 }
-
