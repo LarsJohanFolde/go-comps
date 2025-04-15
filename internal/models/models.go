@@ -2,12 +2,27 @@ package models
 
 import (
 	"fmt"
+	"golang.org/x/text/unicode/norm"
+	"strings"
+	"unicode"
 )
 
 type Person struct {
 	WcaId     string
 	Name      string
 	CountryId string
+}
+
+func (p Person) NormalizeName() string {
+	t := norm.NFD.String(p.Name)
+	result := make([]rune, 0, len(t))
+	for _, r := range t {
+		if unicode.Is(unicode.Mn, r) {
+			continue
+		}
+		result = append(result, r)
+	}
+	return strings.ToLower(string(result))
 }
 
 type Competition struct {

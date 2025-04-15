@@ -67,8 +67,7 @@ func GetUpcomingCompetitions(wcaId string) []models.Competition {
         )), "accepted"),
         CASE WHEN start_date > CURRENT_DATE() THEN true ELSE false END AS Upcoming
     FROM Competitions c
-    WHERE c.id IN (SELECT competitionId FROM Results WHERE personid = '%s')
-        OR c.id IN (
+    WHERE c.id IN (
             SELECT r.competition_id
             FROM registrations r
             JOIN Competitions c1 ON r.competition_id = c.id
@@ -76,7 +75,7 @@ func GetUpcomingCompetitions(wcaId string) []models.Competition {
 		   )
     GROUP BY c.id
     ORDER BY c.start_date DESC
-    `, wcaId, wcaId, wcaId)
+    `, wcaId, wcaId)
 
 	dsn := LoadDSN()
 	db, err := sql.Open("mysql", dsn)

@@ -17,7 +17,8 @@ type model struct {
 	allPersons      []models.Person
 	filteredPersons []models.Person
 	cursor          int
-	selectedWcaId   string
+	selectedPerson  models.Person
+	shouldClear     bool
 }
 
 func initialModel() model {
@@ -49,6 +50,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "ctrl+c", "esc":
+			m.shouldClear = true
 			return m, tea.Quit
 		case "up", "shift+tab":
 			if m.cursor > 0 {
@@ -64,7 +66,8 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 		case "enter":
 			if len(m.filteredPersons) > 0 {
-				m.selectedWcaId = m.filteredPersons[m.cursor].WcaId
+				m.shouldClear = true
+				m.selectedPerson = m.filteredPersons[m.cursor]
 				return m, tea.Quit
 			}
 		}
@@ -91,6 +94,10 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m model) View() string {
+	if m.shouldClear {
+		return ""
+	}
+
 	s := "Type to search. Use ↑/↓ to navigate, Enter to select, esc to quit.\n\n"
 	s += m.input.View() + "\n\n"
 
@@ -133,11 +140,11 @@ func main() {
 	}
 
 	if m, ok := finalModel.(model); ok {
-		if m.selectedWcaId == "" {
+		if m.selectedPerson.WcaId == "" {
 			os.Exit(0)
 		}
-		fmt.Printf("\n\n")
-		competitions := db.GetUpcomingCompetitions(m.selectedWcaId)
+		fmt.Printf("\n\033[32m> %s\033[0m\n\n", m.selectedPerson.Name)
+		competitions := db.GetUpcomingCompetitions(m.selectedPerson.WcaId)
 		for _, competition := range competitions {
 			fmt.Printf(
 				"%s[%s] %s, %s\n\t%s\033[0m\n\n",
