@@ -34,6 +34,11 @@ type Competition struct {
 	CompetingStatus string
 }
 
+func (c Competition) Hyperlink() string {
+    url := fmt.Sprintf("https://worldcubeassociation.org/competitions/%s", c.ID)
+    return fmt.Sprintf("\x1b]8;;%s\x1b\\%s\x1b]8;;\x1b\\", url, c.Name)
+}
+
 func (c Competition) StatusColor() string {
 	switch c.CompetingStatus {
 	case "accepted":

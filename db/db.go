@@ -58,6 +58,7 @@ func GetPersons() []models.Person {
 func GetUpcomingCompetitions(wcaId string) []models.Competition {
 	query := fmt.Sprintf(`
     SELECT
+        c.id AS Id,
         c.name AS Competition,
         c.country_id AS CountryId,
         c.start_date AS StartDate,
@@ -65,7 +66,7 @@ func GetUpcomingCompetitions(wcaId string) []models.Competition {
         COALESCE((SELECT r1.competing_status FROM registrations r1 WHERE r1.competition_id = c.id AND r1.user_id = (
         SELECT id from users WHERE wca_id = '%s'
         )), "accepted"),
-        CASE WHEN start_date > CURRENT_DATE() THEN true ELSE false END AS Upcoming
+        CASE WHEN end_date > CURRENT_DATE() THEN true ELSE false END AS Upcoming
     FROM competitions c
     WHERE c.id IN (
             SELECT r.competition_id
@@ -93,18 +94,19 @@ func GetUpcomingCompetitions(wcaId string) []models.Competition {
 	var competitions []models.Competition
 
 	for rows.Next() {
+        var id string
 		var name string
 		var countryId string
 		var startDate string
 		var endDate string
 		var competingStatus string
 		var upcoming bool
-		if err := rows.Scan(&name, &countryId, &startDate, &endDate, &competingStatus, &upcoming); err != nil {
+		if err := rows.Scan(&id, &name, &countryId, &startDate, &endDate, &competingStatus, &upcoming); err != nil {
 			log.Fatal(err)
 		}
 
 		if upcoming {
-			c := models.Competition{Name: name, CountryId: countryId, StartDate: startDate, EndDate: endDate, CompetingStatus: competingStatus}
+            c := models.Competition{ID: id, Name: name, CountryId: countryId, StartDate: startDate, EndDate: endDate, CompetingStatus: competingStatus}
 			competitions = append(competitions, c)
 		}
 	}

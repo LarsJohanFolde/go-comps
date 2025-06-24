@@ -23,7 +23,7 @@ type model struct {
 
 func initialModel() model {
 	ti := textinput.New()
-	ti.Placeholder = "Search names..."
+	ti.Placeholder = "Search competitors..."
 	ti.Focus()
 	ti.CharLimit = 54
 	ti.Width = 30
@@ -150,7 +150,7 @@ func main() {
 				"%s[%s] %s, %s\n\t%s\033[0m\n\n",
 				competition.StatusColor(),
 				competition.CompetingStatus,
-				competition.Name,
+				competition.Hyperlink(),
 				competition.CountryId,
 				competition.Duration(),
 			)
