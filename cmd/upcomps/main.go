@@ -8,7 +8,6 @@ import (
 	"log"
 	"os"
 	"strings"
-	"time"
 
 	"github.com/charmbracelet/bubbles/textinput"
 	"github.com/charmbracelet/bubbletea"
@@ -164,9 +163,9 @@ func main() {
 				tbl.AddRow(
 					competition.CompetingStatus,
 					competition.Name,
-					competition.RegisteredAt.Format(time.RFC3339),
-					competition.RegistrationOpen.Format(time.RFC3339),
-					competition.RegistrationClose.Format(time.RFC3339),
+					competition.RegisteredAt.Format("2006-01-02 15:04:05"),
+					competition.RegistrationOpen.Format("2006-01-02 15:04:05"),
+					competition.RegistrationClose.Format("2006-01-02 15:04:05"),
 					competition.RegistrationTiming(),
 					competition.CountryId,
 					competition.StartDate.Format("2006-01-02"),
