@@ -2,10 +2,10 @@ package db
 
 import (
 	"database/sql"
-    "time"
 	"fmt"
 	"go-comps/internal/models"
 	"log"
+	"time"
 	"os"
 	"strings"
 
@@ -50,6 +50,7 @@ func GetPersons() []models.Person {
 			Name:      strings.Split(name, " (")[0],
 			CountryId: countryId,
 		}
+		p.NormalizedName = p.NormalizeName()
 		persons = append(persons, p)
 	}
 
@@ -105,26 +106,26 @@ func GetUpcomingCompetitions(wcaId string) []models.Competition {
 		var endDate time.Time
 		var competingStatus string
 		var upcoming bool
-        var registeredAt time.Time
-        var registrationOpen time.Time
-        var registrationClose time.Time
+		var registeredAt time.Time
+		var registrationOpen time.Time
+		var registrationClose time.Time
 
 		if err := rows.Scan(&id, &name, &countryId, &startDate, &endDate, &competingStatus, &upcoming, &registeredAt, &registrationOpen, &registrationClose); err != nil {
 			log.Fatal(err)
 		}
 
 		c := models.Competition{
-            ID: id, 
-            Name: name, 
-            CountryId: countryId, 
-            StartDate: startDate, 
-            EndDate: endDate, 
-            CompetingStatus: competingStatus, 
-            Upcoming: upcoming, 
-            RegisteredAt: registeredAt, 
-            RegistrationOpen: registrationOpen,
-            RegistrationClose: registrationClose,
-        }
+			ID:                id,
+			Name:              name,
+			CountryId:         countryId,
+			StartDate:         startDate,
+			EndDate:           endDate,
+			CompetingStatus:   competingStatus,
+			Upcoming:          upcoming,
+			RegisteredAt:      registeredAt,
+			RegistrationOpen:  registrationOpen,
+			RegistrationClose: registrationClose,
+		}
 		competitions = append(competitions, c)
 	}
 	return competitions

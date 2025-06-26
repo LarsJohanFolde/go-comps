@@ -2,16 +2,17 @@ package models
 
 import (
 	"fmt"
-    "time"
 	"golang.org/x/text/unicode/norm"
 	"strings"
+	"time"
 	"unicode"
 )
 
 type Person struct {
-	WcaId     string
-	Name      string
-	CountryId string
+	WcaId          string
+	Name           string
+	NormalizedName string
+	CountryId      string
 }
 
 func (p Person) NormalizeName() string {
@@ -27,16 +28,16 @@ func (p Person) NormalizeName() string {
 }
 
 type Competition struct {
-	ID               string
-	Name             string
-	CountryId        string
-	StartDate        time.Time
-	EndDate          time.Time
-	CompetingStatus  string
-	Upcoming         bool
-    RegisteredAt     time.Time
-    RegistrationOpen time.Time
-    RegistrationClose time.Time
+	ID                string
+	Name              string
+	CountryId         string
+	StartDate         time.Time
+	EndDate           time.Time
+	CompetingStatus   string
+	Upcoming          bool
+	RegisteredAt      time.Time
+	RegistrationOpen  time.Time
+	RegistrationClose time.Time
 }
 
 func (c Competition) Hyperlink() string {
@@ -45,13 +46,13 @@ func (c Competition) Hyperlink() string {
 }
 
 func (c Competition) RegistrationTiming() string {
-    if c.RegisteredAt.Before(c.RegistrationOpen) {
-        return "Early"
-    } else if c.RegisteredAt.After(c.RegistrationClose) {
-        return "Late" 
-    } else {
-        return ""
-    }
+	if c.RegisteredAt.Before(c.RegistrationOpen) {
+		return "Early"
+	} else if c.RegisteredAt.After(c.RegistrationClose) {
+		return "Late"
+	} else {
+		return ""
+	}
 }
 
 func (c Competition) StatusColor() string {

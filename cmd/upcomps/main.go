@@ -83,7 +83,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	query := strings.ToLower(m.input.Value())
 	m.filteredPersons = nil
 	for _, person := range m.allPersons {
-		if strings.Contains(strings.ToLower(person.Name), query) {
+		if strings.Contains(strings.ToLower(person.NormalizedName), query) {
 			m.filteredPersons = append(m.filteredPersons, person)
 		}
 	}
@@ -135,7 +135,7 @@ func main() {
 			os.Exit(1)
 		}
 
-        registrationTimeStamps := flag.Bool("t", false, "Render the registration timestamps as well as registration opening")
+		registrationTimeStamps := flag.Bool("t", false, "Render the registration timestamps as well as registration opening")
 		listAllCompetitions := flag.Bool("a", false, "List new and old competitions")
 		flag.Parse()
 
@@ -156,38 +156,38 @@ func main() {
 
 		fmt.Println("\033[32m" + m.selectedPerson.Name)
 
-        if *registrationTimeStamps {
-            tbl := table.New("Status", "Competition", "Registered At", "Registration Open", "Registration Close", "Registration Timing", "Country", "Start Date", "End Date")
-            tbl.WithHeaderFormatter(headerFmt).WithFirstColumnFormatter(columnFmt)
+		if *registrationTimeStamps {
+			tbl := table.New("Status", "Competition", "Registered At", "Registration Open", "Registration Close", "Registration Timing", "Country", "Start Date", "End Date")
+			tbl.WithHeaderFormatter(headerFmt).WithFirstColumnFormatter(columnFmt)
 
-            for _, competition := range competitions {
-                tbl.AddRow(
-                    competition.CompetingStatus,
-                    competition.Name,
-                    competition.RegisteredAt.Format(time.RFC3339),
-                    competition.RegistrationOpen.Format(time.RFC3339),
-                    competition.RegistrationClose.Format(time.RFC3339),
-                    competition.RegistrationTiming(),
-                    competition.CountryId,
-                    competition.StartDate.Format("2006-01-02"),
-                    competition.EndDate.Format("2006-01-02"),
-                )
-            }
-            tbl.Print()
-        } else {
-            tbl := table.New("Status", "Competition", "Country", "Start Date", "End Date")
-            tbl.WithHeaderFormatter(headerFmt).WithFirstColumnFormatter(columnFmt)
+			for _, competition := range competitions {
+				tbl.AddRow(
+					competition.CompetingStatus,
+					competition.Name,
+					competition.RegisteredAt.Format(time.RFC3339),
+					competition.RegistrationOpen.Format(time.RFC3339),
+					competition.RegistrationClose.Format(time.RFC3339),
+					competition.RegistrationTiming(),
+					competition.CountryId,
+					competition.StartDate.Format("2006-01-02"),
+					competition.EndDate.Format("2006-01-02"),
+				)
+			}
+			tbl.Print()
+		} else {
+			tbl := table.New("Status", "Competition", "Country", "Start Date", "End Date")
+			tbl.WithHeaderFormatter(headerFmt).WithFirstColumnFormatter(columnFmt)
 
-            for _, competition := range competitions {
-                tbl.AddRow(
-                    competition.CompetingStatus,
-                    competition.Name,
-                    competition.CountryId,
-                    competition.StartDate.Format("2006-01-02"),
-                    competition.EndDate.Format("2006-01-02"),
-                )
-            }
-            tbl.Print()
-        }
+			for _, competition := range competitions {
+				tbl.AddRow(
+					competition.CompetingStatus,
+					competition.Name,
+					competition.CountryId,
+					competition.StartDate.Format("2006-01-02"),
+					competition.EndDate.Format("2006-01-02"),
+				)
+			}
+			tbl.Print()
+		}
 	}
 }
