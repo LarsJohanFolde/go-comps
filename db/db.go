@@ -94,7 +94,7 @@ func GetUpcomingCompetitions(wcaId string) []models.Competition {
 	var competitions []models.Competition
 
 	for rows.Next() {
-        var id string
+		var id string
 		var name string
 		var countryId string
 		var startDate string
@@ -105,10 +105,8 @@ func GetUpcomingCompetitions(wcaId string) []models.Competition {
 			log.Fatal(err)
 		}
 
-		if upcoming {
-            c := models.Competition{ID: id, Name: name, CountryId: countryId, StartDate: startDate, EndDate: endDate, CompetingStatus: competingStatus}
-			competitions = append(competitions, c)
-		}
+		c := models.Competition{ID: id, Name: name, CountryId: countryId, StartDate: startDate, EndDate: endDate, CompetingStatus: competingStatus, Upcoming: upcoming}
+		competitions = append(competitions, c)
 	}
 	return competitions
 }

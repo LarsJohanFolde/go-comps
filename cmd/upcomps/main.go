@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"go-comps/db"
 	"go-comps/internal/models"
@@ -10,6 +11,8 @@ import (
 
 	"github.com/charmbracelet/bubbles/textinput"
 	"github.com/charmbracelet/bubbletea"
+	"github.com/fatih/color"
+	"github.com/rodaine/table"
 )
 
 type model struct {
@@ -120,19 +123,6 @@ func (m model) View() string {
 }
 
 func main() {
-	if len(os.Args) > 1 {
-		wcaId := os.Args[1]
-		competitions := db.GetUpcomingCompetitions(wcaId)
-		for _, competition := range competitions {
-			fmt.Printf(
-				"%s, %s\n\t%s\n\n",
-				competition.Name,
-				competition.CountryId,
-				competition.Duration(),
-			)
-		}
-		os.Exit(0)
-	}
 	p := tea.NewProgram(initialModel())
 	finalModel, err := p.Run()
 	if err != nil {
@@ -141,19 +131,40 @@ func main() {
 
 	if m, ok := finalModel.(model); ok {
 		if m.selectedPerson.WcaId == "" {
-			os.Exit(0)
+			os.Exit(1)
 		}
-		fmt.Printf("\n\033[32m> %s\033[0m\n\n", m.selectedPerson.Name)
+
+		listAllCompetitions := flag.Bool("a", false, "List new and old competitions")
+		flag.Parse()
+
 		competitions := db.GetUpcomingCompetitions(m.selectedPerson.WcaId)
+
+		headerFmt := color.New(color.FgGreen, color.Underline).SprintfFunc()
+		columnFmt := color.New(color.FgYellow).SprintfFunc()
+
+		tbl := table.New("Status", "Competition", "Country", "Start Date", "End Date")
+		tbl.WithHeaderFormatter(headerFmt).WithFirstColumnFormatter(columnFmt)
+
+		if !*listAllCompetitions {
+			allCompetitions := competitions
+			competitions = []models.Competition{}
+			for _, c := range allCompetitions {
+				if c.Upcoming {
+					competitions = append(competitions, c)
+				}
+			}
+		}
+
+		fmt.Println("\033[32m" + m.selectedPerson.Name)
 		for _, competition := range competitions {
-			fmt.Printf(
-				"%s[%s] %s, %s\n\t%s\033[0m\n\n",
-				competition.StatusColor(),
+			tbl.AddRow(
 				competition.CompetingStatus,
-				competition.Hyperlink(),
+				competition.Name,
 				competition.CountryId,
-				competition.Duration(),
+				competition.StartDate,
+				competition.EndDate,
 			)
 		}
+		tbl.Print()
 	}
 }
