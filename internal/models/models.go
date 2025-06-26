@@ -2,6 +2,7 @@ package models
 
 import (
 	"fmt"
+    "time"
 	"golang.org/x/text/unicode/norm"
 	"strings"
 	"unicode"
@@ -26,18 +27,31 @@ func (p Person) NormalizeName() string {
 }
 
 type Competition struct {
-	ID              string
-	Name            string
-	CountryId       string
-	StartDate       string
-	EndDate         string
-	CompetingStatus string
-	Upcoming        bool
+	ID               string
+	Name             string
+	CountryId        string
+	StartDate        time.Time
+	EndDate          time.Time
+	CompetingStatus  string
+	Upcoming         bool
+    RegisteredAt     time.Time
+    RegistrationOpen time.Time
+    RegistrationClose time.Time
 }
 
 func (c Competition) Hyperlink() string {
 	url := fmt.Sprintf("https://worldcubeassociation.org/competitions/%s", c.ID)
 	return fmt.Sprintf("\x1b]8;;%s\x1b\\%s\x1b]8;;\x1b\\", url, c.Name)
+}
+
+func (c Competition) RegistrationTiming() string {
+    if c.RegisteredAt.Before(c.RegistrationOpen) {
+        return "Early"
+    } else if c.RegisteredAt.After(c.RegistrationClose) {
+        return "Late" 
+    } else {
+        return ""
+    }
 }
 
 func (c Competition) StatusColor() string {
@@ -58,7 +72,7 @@ func (c Competition) StatusColor() string {
 
 func (c Competition) Duration() string {
 	if c.StartDate == c.EndDate {
-		return c.StartDate
+		return c.StartDate.Format("2006-01-02")
 	}
-	return fmt.Sprintf("%s -> %s", c.StartDate, c.EndDate)
+	return fmt.Sprintf("%s -> %s", c.StartDate.Format("2006-01-02"), c.EndDate.Format("2006-01-02"))
 }

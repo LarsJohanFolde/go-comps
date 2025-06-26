@@ -8,6 +8,7 @@ import (
 	"log"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/charmbracelet/bubbles/textinput"
 	"github.com/charmbracelet/bubbletea"
@@ -134,6 +135,7 @@ func main() {
 			os.Exit(1)
 		}
 
+        registrationTimeStamps := flag.Bool("t", false, "Render the registration timestamps as well as registration opening")
 		listAllCompetitions := flag.Bool("a", false, "List new and old competitions")
 		flag.Parse()
 
@@ -141,9 +143,6 @@ func main() {
 
 		headerFmt := color.New(color.FgGreen, color.Underline).SprintfFunc()
 		columnFmt := color.New(color.FgYellow).SprintfFunc()
-
-		tbl := table.New("Status", "Competition", "Country", "Start Date", "End Date")
-		tbl.WithHeaderFormatter(headerFmt).WithFirstColumnFormatter(columnFmt)
 
 		if !*listAllCompetitions {
 			allCompetitions := competitions
@@ -156,15 +155,39 @@ func main() {
 		}
 
 		fmt.Println("\033[32m" + m.selectedPerson.Name)
-		for _, competition := range competitions {
-			tbl.AddRow(
-				competition.CompetingStatus,
-				competition.Name,
-				competition.CountryId,
-				competition.StartDate,
-				competition.EndDate,
-			)
-		}
-		tbl.Print()
+
+        if *registrationTimeStamps {
+            tbl := table.New("Status", "Competition", "Registered At", "Registration Open", "Registration Close", "Registration Timing", "Country", "Start Date", "End Date")
+            tbl.WithHeaderFormatter(headerFmt).WithFirstColumnFormatter(columnFmt)
+
+            for _, competition := range competitions {
+                tbl.AddRow(
+                    competition.CompetingStatus,
+                    competition.Name,
+                    competition.RegisteredAt.Format(time.RFC3339),
+                    competition.RegistrationOpen.Format(time.RFC3339),
+                    competition.RegistrationClose.Format(time.RFC3339),
+                    competition.RegistrationTiming(),
+                    competition.CountryId,
+                    competition.StartDate.Format("2006-01-02"),
+                    competition.EndDate.Format("2006-01-02"),
+                )
+            }
+            tbl.Print()
+        } else {
+            tbl := table.New("Status", "Competition", "Country", "Start Date", "End Date")
+            tbl.WithHeaderFormatter(headerFmt).WithFirstColumnFormatter(columnFmt)
+
+            for _, competition := range competitions {
+                tbl.AddRow(
+                    competition.CompetingStatus,
+                    competition.Name,
+                    competition.CountryId,
+                    competition.StartDate.Format("2006-01-02"),
+                    competition.EndDate.Format("2006-01-02"),
+                )
+            }
+            tbl.Print()
+        }
 	}
 }

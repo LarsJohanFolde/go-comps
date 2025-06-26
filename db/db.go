@@ -2,6 +2,7 @@ package db
 
 import (
 	"database/sql"
+    "time"
 	"fmt"
 	"go-comps/internal/models"
 	"log"
@@ -66,7 +67,10 @@ func GetUpcomingCompetitions(wcaId string) []models.Competition {
         COALESCE((SELECT r1.competing_status FROM registrations r1 WHERE r1.competition_id = c.id AND r1.user_id = (
         SELECT id from users WHERE wca_id = '%s'
         )), "accepted"),
-        CASE WHEN end_date > CURRENT_DATE() THEN true ELSE false END AS Upcoming
+        CASE WHEN end_date > CURRENT_DATE() THEN true ELSE false END AS Upcoming,
+        (SELECT created_at FROM registrations r1 WHERE r1.competition_id = c.id AND r1.user_id = (SELECT id FROM users WHERE wca_id = '%s')),
+        c.registration_open,
+        c.registration_close
     FROM competitions c
     WHERE c.id IN (
             SELECT r.competition_id
@@ -76,7 +80,7 @@ func GetUpcomingCompetitions(wcaId string) []models.Competition {
 		   )
     GROUP BY c.id
     ORDER BY c.start_date DESC
-    `, wcaId, wcaId)
+    `, wcaId, wcaId, wcaId)
 
 	dsn := LoadDSN()
 	db, err := sql.Open("mysql", dsn)
@@ -97,15 +101,30 @@ func GetUpcomingCompetitions(wcaId string) []models.Competition {
 		var id string
 		var name string
 		var countryId string
-		var startDate string
-		var endDate string
+		var startDate time.Time
+		var endDate time.Time
 		var competingStatus string
 		var upcoming bool
-		if err := rows.Scan(&id, &name, &countryId, &startDate, &endDate, &competingStatus, &upcoming); err != nil {
+        var registeredAt time.Time
+        var registrationOpen time.Time
+        var registrationClose time.Time
+
+		if err := rows.Scan(&id, &name, &countryId, &startDate, &endDate, &competingStatus, &upcoming, &registeredAt, &registrationOpen, &registrationClose); err != nil {
 			log.Fatal(err)
 		}
 
-		c := models.Competition{ID: id, Name: name, CountryId: countryId, StartDate: startDate, EndDate: endDate, CompetingStatus: competingStatus, Upcoming: upcoming}
+		c := models.Competition{
+            ID: id, 
+            Name: name, 
+            CountryId: countryId, 
+            StartDate: startDate, 
+            EndDate: endDate, 
+            CompetingStatus: competingStatus, 
+            Upcoming: upcoming, 
+            RegisteredAt: registeredAt, 
+            RegistrationOpen: registrationOpen,
+            RegistrationClose: registrationClose,
+        }
 		competitions = append(competitions, c)
 	}
 	return competitions
