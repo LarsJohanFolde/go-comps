@@ -22,7 +22,14 @@ func (p Person) NormalizeName() string {
 		if unicode.Is(unicode.Mn, r) {
 			continue
 		}
-		result = append(result, r)
+		switch r {
+		case 'æ':
+			result = append(result, 'e')
+		case 'Æ':
+			result = append(result, 'E')
+		default:
+			result = append(result, r)
+		}
 	}
 	return strings.ToLower(string(result))
 }
